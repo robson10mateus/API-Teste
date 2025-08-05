@@ -1,0 +1,25 @@
+unit UBd1;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TBd = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Bd: TBd;
+
+implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
+
+{$R *.dfm}
+
+end.

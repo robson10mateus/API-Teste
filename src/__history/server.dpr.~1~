@@ -1,0 +1,25 @@
+program Server;
+
+{$APPTYPE CONSOLE}
+
+uses
+  Horse,
+  Horse.Firedac,
+  uRoutes,
+  uDatabase,
+  System.SysUtils;
+
+begin
+  try
+    THorseFireDAC.SetConfigFile('config.ini');
+    THorseFireDAC.StartConnection;
+
+    RegisterRoutes;
+
+    WriteLn('Servidor rodando em http://localhost:9000');
+    THorse.Listen(9000);
+  except
+    on E: Exception do
+      Writeln(E.ClassName, ': ', E.Message);
+  end;
+end.

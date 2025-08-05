@@ -1,0 +1,28 @@
+unit uRoutes;
+
+interface
+
+uses
+  Horse, System.SysUtils;
+
+procedure RegisterRoutes;
+
+implementation
+
+procedure RegisterRoutes;
+begin
+  THorse.Get('/ping',
+    procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+    begin
+      Res.Send('pong');
+    end);
+
+  THorse.Get('/usuarios',
+    procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+    begin
+      // Aqui você chamaria uma função para buscar os usuários no banco
+      Res.Send('[{"id":1,"nome":"João"},{"id":2,"nome":"Maria"}]');
+    end);
+end;
+
+end.

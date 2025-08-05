@@ -1,0 +1,54 @@
+unit uRoutes;
+
+interface
+
+uses
+  Horse, System.JSON, DB, Ora, uODACDatabase;
+
+procedure RegisterRoutes;
+procedure GetUsuarios(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+
+implementation
+
+procedure RegisterRoutes;
+begin
+  THorse.Get('/ping',
+    procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+    begin
+      Res.Send('pong');
+    end);
+
+  THorse.Get('/usuarios',
+    procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+    begin
+      GetUsuarios(Req, Res, Next); // <- Corrigido aqui
+    end);
+end;
+
+procedure GetUsuarios(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  Query: TOraQuery;
+  JSONArray: TJSONArray;
+  JSONObj: TJSONObject;
+begin
+  JSONArray := TJSONArray.Create;
+  Query := TOraQuery.Create(nil);
+  try
+    Query.Session := TDatabase.GetSession;
+    Query.SQL.Text := 'SELECT ID_USUARIO, NOME_USUARIO FROM sct_usuario WHERE ROWNUM <= 10';
+    Query.Open;
+    while not Query.Eof do
+    begin
+      JSONObj := TJSONObject.Create;
+      JSONObj.AddPair('id', TJSONNumber.Create(Query.FieldByName('ID_USUARIO').AsInteger));
+      JSONObj.AddPair('nome', Query.FieldByName('NOME_USUARIO').AsString);
+      JSONArray.AddElement(JSONObj);
+      Query.Next;
+    end;
+    Res.Send<TJSONArray>(JSONArray);
+  finally
+    Query.Free;
+  end;
+end;
+
+end.
